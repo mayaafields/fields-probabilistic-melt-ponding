@@ -49,8 +49,7 @@ Models:
        alpha_ap ~ Normal(-6, 3)
        beta_temp_ap ~ Normal(0, 1.5)
 
-Observation unit
-----------------
+Model units- 
 Each row is one:
 
     ice shelf × ERA5 grid cell × DJF year
@@ -73,8 +72,8 @@ with:
       empirical connected-ponding threshold;
     - writes complete run metadata.
 
-Expected input
---------------
+Expected input: 
+
 A Parquet, CSV, Feather, or GeoPackage-compatible table containing:
 
     shelf
@@ -108,9 +107,6 @@ Example:
     CORES=4 \
     python fit_manuscript_temperature_models.py
 """
-
-
-# Limit nested numerical-library threading
 
 import os
 
@@ -1947,10 +1943,7 @@ def summarize_threshold_crossing(
         rows
     )
 
-
-# =============================================================================
-# 8. Calibration and aggregation
-# =============================================================================
+# Calibration and aggregation
 
 def make_prediction_calibration(
     predictions,
@@ -2313,9 +2306,7 @@ def row_fit_metrics(
     }
 
 
-# =============================================================================
-# 9. Plotting
-# =============================================================================
+# Plotting functions
 
 def plot_trace_and_rank(
     idata,
@@ -3210,10 +3201,7 @@ def plot_shelf_year_heatmaps(
         / "temperature_model_shelf_year_residuals",
     )
 
-
-# =============================================================================
-# 10. Main
-# =============================================================================
+# Main Function Call
 
 def main():
     """Run the manuscript temperature-model analysis."""
@@ -3521,9 +3509,7 @@ def main():
 
     print("=" * 100 + "\n")
 
-    # -------------------------------------------------------------------------
     # Read and prepare all-shelf data
-    # -------------------------------------------------------------------------
 
     raw = read_table(
         input_path
@@ -3661,9 +3647,7 @@ def main():
         / "model_training_sample_summary.json",
     )
 
-    # -------------------------------------------------------------------------
     # Empirical temperature bins
-    # -------------------------------------------------------------------------
 
     all_shelves_bins = (
         make_temperature_bins(
@@ -3703,10 +3687,8 @@ def main():
         figure_directory,
     )
 
-    # -------------------------------------------------------------------------
     # Fit All-Shelves Beta-Binomial
-    # -------------------------------------------------------------------------
-
+    
     print(
         "\n[FIT] All-Shelves Beta-Binomial",
         flush=True,
@@ -3745,9 +3727,7 @@ def main():
         overwrite=overwrite_traces,
     )
 
-    # -------------------------------------------------------------------------
     # Fit Peninsula Binomial
-    # -------------------------------------------------------------------------
 
     print(
         "\n[FIT] Peninsula Binomial sensitivity",
@@ -3813,10 +3793,6 @@ def main():
             peninsula_temperature_sd,
         ),
     }
-
-    # -------------------------------------------------------------------------
-    # Parameter summaries and MCMC diagnostics
-    # -------------------------------------------------------------------------
 
     summary_tables = []
     sampler_rows = []
@@ -3955,9 +3931,7 @@ def main():
         / "all_model_sampler_diagnostics.csv",
     )
 
-    # -------------------------------------------------------------------------
     # Posterior response curves
-    # -------------------------------------------------------------------------
 
     temperature_grid = np.linspace(
         curve_temperature_minimum,
@@ -4092,9 +4066,7 @@ def main():
         ),
     )
 
-    # -------------------------------------------------------------------------
     # Row predictions, calibration, and residuals
-    # -------------------------------------------------------------------------
 
     prediction_lookup = {}
     calibration_lookup = {}
@@ -4270,10 +4242,6 @@ def main():
         figure_directory,
     )
 
-    # -------------------------------------------------------------------------
-    # Information criteria within native training samples
-    # -------------------------------------------------------------------------
-
     loo_rows = []
 
     if compute_log_likelihood:
@@ -4349,10 +4317,6 @@ def main():
             / "native_training_sample_loo.csv",
         )
 
-    # -------------------------------------------------------------------------
-    # Metadata
-    # -------------------------------------------------------------------------
-
     metadata = {
         "analysis": (
             "Manuscript temperature-response models"
@@ -4426,11 +4390,7 @@ def main():
                 "trace_path": str(
                     peninsula_trace_path.resolve()
                 ),
-                "bootstrap_note": (
-                    "The manuscript 95% Peninsula uncertainty "
-                    "interval requires a separate 1,000-replicate "
-                    "whole-shelf bootstrap."
-                ),
+          
             },
         },
         "priors": {
