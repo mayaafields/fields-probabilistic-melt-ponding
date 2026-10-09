@@ -4,25 +4,6 @@
 """
 Fig. 2 Manuscript Publication Figure
 
-Panel A
--------
-
-    largest connected cluster / valid shelf pixels
-
-The vertical line marks the empirical threshold for connected-network growth.
-
-Panel B
--------
-
-1. Binned pixel-pooled observed pond fraction.
-2. Equal-row empirical bin means.
-3. All-shelves Beta-Binomial posterior response and 95% interval.
-4. Antarctic Peninsula-trained Binomial response.
-5. Peninsula whole-shelf bootstrap 95% interval.
-
-Panel B displays 0–17% visible ponding. Its inset shows the warm-temperature,
-low-response region at 0–5%.
-
 """
  
 import os
@@ -67,9 +48,6 @@ KNEE_SUMMARY_PATH = os.path.join(
     "empirical_knee_summary.csv",
 )
 
-
-# Bayesian temperature-response outputs
-
 BAYES_OUT_DIR = (
     "era5_primary_and_peninsula_sensitivity"
 )
@@ -88,8 +66,6 @@ PENINSULA_BOOTSTRAP_PATH = os.path.join(
     BAYES_OUT_DIR,
     "peninsula_binomial_shelf_bootstrap_curve.csv",
 )
-
-# Outputs
 
 os.makedirs(
     CLUSTER_FIG_DIR,
@@ -110,9 +86,6 @@ TRANSITION_TEMPERATURE_PATH = (
     OUTPUT_BASENAME
     + "_transition_temperature_summary.csv"
 )
-
- 
-# Analysis settings
  
 PRIMARY_MIN_PONDED_PIXELS = 100
 
@@ -168,16 +141,14 @@ TEMPERATURE_INSET_BOUNDS = [
     0.42,
 ]
 
-
-  
 # PNAS figure dimensions
 # Standard PNAS widths:
 #   8.7 cm  = one column
 #   11.4 cm = one and a half columns
 #   17.8 cm = two columns
   
-FIGURE_WIDTH_CM = 17.8
-FIGURE_HEIGHT_CM = 11.4
+FIGURE_WIDTH_CM = 16
+FIGURE_HEIGHT_CM = 11
 
 SAVE_DPI = 600
   
@@ -208,12 +179,12 @@ plt.rcParams.update(
     {
         "font.family": "DejaVu Sans",
         "font.size": 8,
-        "axes.labelsize": 8,
+        "axes.labelsize": 7.7,
         "axes.titlesize": 9,
         "xtick.labelsize": 7,
         "ytick.labelsize": 7,
-        "legend.fontsize": 6.5,
-        "figure.dpi": 180,
+        "legend.fontsize": 7,
+        "figure.dpi": 600,
         "savefig.dpi": SAVE_DPI,
         "axes.linewidth": 0.8,
         "pdf.fonttype": 42,
@@ -637,11 +608,6 @@ def shelf_balanced_local_quantile_curve(
     return pd.DataFrame(
         rows
     )
-
-
- 
-# Transition-temperature conversion helpers
- 
 
 def temperature_at_ponding_fraction(
     curve,
@@ -1563,8 +1529,6 @@ for column in numeric_bin_columns:
         ],
         errors="coerce",
     )
-
-
   
 # Select model curves
   
@@ -2046,8 +2010,6 @@ print_transition_temperature_report(
 print(
     "=" * 78
 )
-
-
  
 # Create PNAS two-column-width figure
  
@@ -2071,23 +2033,14 @@ figure, (
     ),
 )
 
-# Reserve the bottom of the figure for the universal legend.
 figure.subplots_adjust(
     left=0.095,
     right=0.985,
     bottom=0.29,
     top=0.965,
-    wspace=0.31,
+    wspace=0.20,
 )
 
-
- 
-# Panel A: dominant connected-cluster relationship
- 
-
-  
-# Transition uncertainty
-  
 
 if (
     SHOW_95_INTERVAL
@@ -2217,11 +2170,6 @@ cluster_axis.axvline(
     zorder=6,
 )
 
-
-  
-# Panel A formatting
-  
-
 cluster_axis.set_xscale(
     "log"
 )
@@ -2246,11 +2194,11 @@ cluster_axis.set_xlim(
 )
 
 cluster_axis.set_xlabel(
-    "Visible ponded fraction (%)"
+    "Ponded fraction (%)"
 )
 
 cluster_axis.set_ylabel(
-    "Largest connected cluster / valid shelf pixels (%)"
+    "Largest connected cluster / shelf pixels (%)"
 )
 
 cluster_axis.xaxis.set_major_formatter(
@@ -2307,11 +2255,6 @@ cluster_axis.text(
     zorder=200,
 )
 
-
- 
-# Panel B: temperature-response comparison
- 
-
 valid_equal_row = (
     np.isfinite(
         binned_observations[
@@ -2342,11 +2285,8 @@ valid_bars = (
         ]
     )
 )
-
-
-  
+ 
 # Binned pixel-pooled observations
-  
 
 if SHOW_TEMPERATURE_BARS:
     temperature_axis.bar(
@@ -2386,11 +2326,6 @@ plot_temperature_model_curve(
     linewidth=2.0,
 )
 
-
-  
-# Peninsula uncertainty
-  
-
 if peninsula_bootstrap is not None:
     plot_peninsula_bootstrap_interval(
         temperature_axis,
@@ -2422,22 +2357,16 @@ else:
         linewidth=0,
         zorder=3,
     )
-
-
-  
+ 
 # Peninsula median
-  
 
 plot_peninsula_median(
     temperature_axis,
     peninsula_curve,
     linewidth=2.0,
 )
-
-
   
 # Equal-row empirical bin means
-  
 
 temperature_axis.scatter(
     binned_observations.loc[
@@ -2455,12 +2384,9 @@ temperature_axis.scatter(
     linewidth=0.55,
     zorder=20,
 )
-
-
   
 # Panel B formatting
   
-
 temperature_axis.set_xlim(
     TEMPERATURE_PANEL_X_MIN,
     temperature_panel_x_maximum,
@@ -2476,7 +2402,7 @@ temperature_axis.set_xlabel(
 )
 
 temperature_axis.set_ylabel(
-    "Visible ponded fraction (%)"
+    "Ponded fraction (%)"
 )
 
 temperature_axis.yaxis.set_major_locator(
@@ -2538,11 +2464,8 @@ temperature_axis.text(
     zorder=200,
 )
 
-
- 
 # Panel B warm-temperature inset
  
-
 temperature_inset = temperature_axis.inset_axes(
     TEMPERATURE_INSET_BOUNDS
 )
@@ -2555,11 +2478,8 @@ temperature_inset.patch.set_alpha(
     0.96
 )
 
-
-  
 # Inset observations
   
-
 if SHOW_TEMPERATURE_BARS:
     temperature_inset.bar(
         binned_observations.loc[
@@ -2583,12 +2503,9 @@ if SHOW_TEMPERATURE_BARS:
         alpha=0.30,
         zorder=1,
     )
-
-
   
 # Inset all-shelves model
   
-
 plot_temperature_model_curve(
     temperature_inset,
     all_shelves_curve,
@@ -2597,11 +2514,8 @@ plot_temperature_model_curve(
     outside_support_alpha=0.05,
     linewidth=1.6,
 )
-
-
-  
+ 
 # Inset Peninsula uncertainty
-  
 
 if peninsula_bootstrap is not None:
     plot_peninsula_bootstrap_interval(
@@ -2633,23 +2547,14 @@ else:
         alpha=0.20,
         linewidth=0,
         zorder=3,
-    )
-
-
-  
+    ) 
 # Inset Peninsula median
-  
 
 plot_peninsula_median(
     temperature_inset,
     peninsula_curve,
     linewidth=1.6,
 )
-
-
-  
-# Inset equal-row means
-  
 
 temperature_inset.scatter(
     binned_observations.loc[
@@ -2667,11 +2572,6 @@ temperature_inset.scatter(
     linewidth=0.4,
     zorder=20,
 )
-
-
-  
-# Inset formatting
-  
 
 temperature_inset.set_xlim(
     TEMPERATURE_INSET_X_MIN,
@@ -2732,98 +2632,104 @@ mark_inset(
     linewidth=0.65,
 )
 
-
- 
-# Universal figure legend beneath both panels
- 
-
 cluster_quantile_legend_handle = (
     Line2D(
-        [
-            0
-        ],
-        [
-            0
-        ],
+        [0],
+        [0],
         color=COLOR_CLUSTER_CURVES,
         linestyle="-",
         linewidth=2.0,
     ),
-
     Line2D(
-        [
-            0
-        ],
-        [
-            0
-        ],
+        [0],
+        [0],
         color=COLOR_CLUSTER_CURVES,
         linestyle="--",
         linewidth=2.0,
     ),
-
     Line2D(
-        [
-            0
-        ],
-        [
-            0
-        ],
+        [0],
+        [0],
         color=COLOR_CLUSTER_CURVES,
         linestyle=":",
-        linewidth=2.2,
+        linewidth=2.1,
+    ),
+)
+
+# Combine each fitted response with its corresponding uncertainty envelope.
+all_shelves_model_handle = (
+    Patch(
+        facecolor=COLOR_ALL_SHELVES_BB,
+        edgecolor="none",
+        alpha=0.16,
+    ),
+    Line2D(
+        [0],
+        [0],
+        color=COLOR_ALL_SHELVES_BB,
+        linestyle="-",
+        linewidth=2.0,
+    ),
+)
+
+peninsula_model_handle = (
+    Patch(
+        facecolor=COLOR_PENINSULA_BINOMIAL,
+        edgecolor="none",
+        alpha=0.22,
+    ),
+    Line2D(
+        [0],
+        [0],
+        color=COLOR_PENINSULA_BINOMIAL,
+        linestyle="-",
+        linewidth=2.0,
+    ),
+)
+
+# Combine the empirical threshold line and bootstrap band.
+threshold_handle = (
+    Patch(
+        facecolor=COLOR_INTERVAL_68,
+        edgecolor="none",
+        alpha=0.14,
+    ),
+    Line2D(
+        [0],
+        [0],
+        color=COLOR_KNEE,
+        linestyle="-",
+        linewidth=1.8,
     ),
 )
 
 universal_legend_handles = [
     Line2D(
-        [
-            0
-        ],
-        [
-            0
-        ],
+        [0],
+        [0],
         marker="o",
         linestyle="none",
         markerfacecolor=COLOR_CLUSTER_POINTS,
         markeredgecolor="white",
         markeredgewidth=0.45,
         markersize=6,
-        alpha=0.70,
+        alpha=0.75,
     ),
 
     cluster_quantile_legend_handle,
 
-    Line2D(
-        [
-            0
-        ],
-        [
-            0
-        ],
-        color=COLOR_KNEE,
-        linewidth=1.8,
-    ),
-
-    Patch(
-        facecolor=COLOR_INTERVAL_68,
-        edgecolor="none",
-        alpha=0.14,
-    ),
+    threshold_handle,
 
     Patch(
         facecolor=COLOR_BINNED_OBSERVATIONS,
         edgecolor="#2171B5",
+        linewidth=0.4,
         alpha=0.35,
     ),
 
     Line2D(
-        [
-            0
-        ],
-        [
-            0
-        ],
+        [0],
+        [0],
         marker="s",
         linestyle="none",
         markerfacecolor=COLOR_EQUAL_ROW,
@@ -2832,85 +2738,19 @@ universal_legend_handles = [
         markersize=6,
     ),
 
-    Line2D(
-        [
-            0
-        ],
-        [
-            0
-        ],
-        color=COLOR_ALL_SHELVES_BB,
-        linewidth=2.0,
-    ),
+    all_shelves_model_handle,
 
-    Patch(
-        facecolor=COLOR_ALL_SHELVES_BB,
-        edgecolor="none",
-        alpha=0.16,
-    ),
-
-    Line2D(
-        [
-            0
-        ],
-        [
-            0
-        ],
-        color=COLOR_PENINSULA_BINOMIAL,
-        linewidth=2.0,
-    ),
-
-    Line2D(
-        [
-            0
-        ],
-        [
-            0
-        ],
-        color=COLOR_PENINSULA_BINOMIAL,
-        linestyle="--",
-        linewidth=1.8,
-    ),
-
-    Patch(
-        facecolor=COLOR_PENINSULA_BINOMIAL,
-        edgecolor="none",
-        alpha=0.22,
-    ),
+    peninsula_model_handle,
 ]
 
 universal_legend_labels = [
-    (
-        "Shelf observations "
-        f"(≥{PRIMARY_MIN_PONDED_PIXELS} ponded pixels)"
-    ),
-
-    "Shelf-balanced local quantiles (50th, 75th, 90th)",
-
-    (
-        "Dominant-cluster acceleration threshold "
-        f"({100.0 * empirical_knee:.2f}%)"
-    ),
-
-    "Threshold central 68% shelf-bootstrap interval",
-
-    "Binned pixel-pooled observed fraction",
-
-    "Equal-row empirical bin mean",
-
-    "All-shelves Beta-Binomial median",
-
-    "All-shelves posterior 95% interval",
-
-    "Antarctic Peninsula Binomial median",
-
-    "Peninsula extrapolation",
-
-    (
-        "Peninsula whole-shelf bootstrap 95% interval"
-        if peninsula_bootstrap is not None
-        else "Peninsula posterior 95% interval"
-    ),
+    "Shelf-year observations",
+    "Shelf-balanced quantiles",
+    "Connected-ponding threshold",
+    "Pixel-pooled observations",
+    "Equal-row observations",
+    "All-Shelves model",
+    "Peninsula-trained model",
 ]
 
 universal_legend = figure.legend(
@@ -2922,28 +2762,26 @@ universal_legend = figure.legend(
         UNIVERSAL_LEGEND_Y,
     ),
     bbox_transform=figure.transFigure,
-    ncol=UNIVERSAL_LEGEND_COLUMNS,
+    ncol=3,
     frameon=True,
     framealpha=0.98,
     facecolor="white",
     edgecolor="0.70",
-    fontsize=6.3,
-    handlelength=2.7,
-    columnspacing=1.5,
-    handletextpad=0.65,
-    labelspacing=0.48,
-    borderpad=0.55,
+    fontsize=7,
+    handlelength=2.4,
+    columnspacing=1.2,
+    handletextpad=0.55,
+    labelspacing=0.45,
+    borderpad=0.50,
     handler_map={
         tuple: HandlerTuple(
             ndivide=None,
-            pad=0.25,
+            pad=0.20,
         )
     },
 )
 
-universal_legend.set_zorder(
-    300
-)
+universal_legend.set_zorder(300)
 
 
 savefig_both(
